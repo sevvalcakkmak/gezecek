@@ -8,10 +8,11 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import DrawerContent from '@/components/navigation/DrawerContent';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { LocalizationProvider, useI18n } from '@/contexts/LocalizationProvider';
+import { LocalizationProvider } from '@/contexts/LocalizationProvider';
+import { useTranslation } from 'react-i18next';
 
 function AppDrawer({ theme, isDark }: { theme: any; isDark: boolean }) {
-  const { t } = useI18n();
+  const { t } = useTranslation();
   return (
     <Drawer
       screenOptions={{

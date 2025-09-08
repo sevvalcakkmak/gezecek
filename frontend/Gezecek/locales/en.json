@@ -7,5 +7,10 @@
   "changeLanguage": "Change Language",
   "currentLanguage": "Current Language",
   "turkish": "Turkish",
-  "english": "English"
+  "english": "English",
+  "pages": {
+    "index": "Home",
+    "itineraries": "Itineraries",
+    "settings": "Settings"
+  }
 }
