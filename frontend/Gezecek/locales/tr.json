@@ -7,5 +7,10 @@
   "changeLanguage": "Dili Değiştir",
   "currentLanguage": "Geçerli Dil",
   "turkish": "Türkçe",
-  "english": "İngilizce"
+  "english": "İngilizce",
+  "pages": {
+    "index": "Ana Sayfa",
+    "itineraries": "Rotalarım",
+    "settings": "Ayarlar"
+  }
 }
