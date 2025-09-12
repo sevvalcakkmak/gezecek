@@ -21,7 +21,7 @@ public class FlightSearchResult {
     private LocalDateTime timestamp;
     private Integer totalResults;
     private FlightSearchParams searchParams;
-    private List<String> flightOptionIds; // References to FlightOption entities
+    private List<FlightOption> flightOptions; //FlightOption entities
     private String status; // SEARCHING, COMPLETED, FAILED
     private String errorMessage;
     private Long processingTimeMs;

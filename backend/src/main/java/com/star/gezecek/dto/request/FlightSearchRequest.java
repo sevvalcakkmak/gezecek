@@ -1,33 +1,30 @@
-package com.star.gezecek.model;
+package com.star.gezecek.dto.request;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.star.gezecek.model.enums.CabinClass;
-import com.star.gezecek.model.enums.SortBy;
+import com.star.gezecek.model.enums.TripType;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.List;
 
 @Data
 @Builder
 public class FlightSearchRequest {
     // Required parameters
     @NotNull
-    private String origin;
+    private String source;
     @NotNull
     private String destination;
-    @NotNull
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate departureDate;
+
+    @Builder.Default
+    private TripType tripType = TripType.ONE_WAY;
+
+    /*@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime departureDate;
 
     // Optional for round trip
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate returnDate;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime returnDate; */
 
-    // Optional parameters with defaults
+    /*// Optional parameters with defaults
     @Builder.Default
     private CabinClass cabinClass = CabinClass.ECONOMY;
 
@@ -46,5 +43,5 @@ public class FlightSearchRequest {
 
     // Additional filters
     private List<String> preferredAirlines;
-    private List<String> excludedAirlines;
+    private List<String> excludedAirlines; */
 }

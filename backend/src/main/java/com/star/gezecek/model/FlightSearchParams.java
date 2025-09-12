@@ -9,6 +9,7 @@ import org.springframework.data.redis.core.RedisHash;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -22,8 +23,8 @@ public class FlightSearchParams {
     private String tripType; // ONE_WAY, ROUND_TRIP
     private String originLocationId;
     private String destinationLocationId;
-    private LocalDate departureDate;
-    private LocalDate returnDate;
+    private LocalDateTime departureDate;
+    private LocalDateTime returnDate;
     private String cabinClass; // ECONOMY, BUSINESS, FIRST
     private String sortBy; // PRICE, DURATION, DEPARTURE_TIME
     private Integer maxStopsCount;
