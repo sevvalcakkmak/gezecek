@@ -1,36 +1,18 @@
 import React from 'react';
-import { Stack, router } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Card, Button, Appbar, Text, useTheme } from 'react-native-paper';
+import { Link, Stack } from 'expo-router';
+import { Text } from '@/components/ui/text';
+import { Center } from '@/components/ui/center';
 
 export default function NotFoundScreen() {
-  const theme = useTheme();
-  const { colors } = theme;
   return (
     <>
-      <Stack.Screen options={{ title: 'Page Not Found' }} />
-      <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top', 'left', 'right', 'bottom']}>
-
-        <Card mode="elevated">
-          <Card.Content>
-            <Text variant="titleLarge">Oops — This screen does not exist</Text>
-            <Text variant="bodyMedium">
-              The page you are looking for might have been removed or is temporarily unavailable. You can go back to the home page to continue.
-            </Text>
-          </Card.Content>
-
-          <Card.Actions >
-            <Button
-              mode="contained"
-              icon="home"
-              onPress={() => router.push('/')}
-              textColor={colors.onSurface}
-            >
-              Ana Sayfa
-            </Button>
-          </Card.Actions>
-        </Card>
-      </SafeAreaView>
+      <Stack.Screen options={{ title: 'Oops!' }} />
+      <Center className="flex-1">
+        <Text className="text-secondary-200">This screen doesn't exist.</Text>
+        <Link href="/" style={{ marginTop: 10 }}>
+          <Text className="text-primary-500">Go to home screen!</Text>
+        </Link>
+      </Center>
     </>
   );
 }

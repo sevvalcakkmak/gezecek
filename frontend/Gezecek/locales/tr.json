@@ -6,11 +6,19 @@
   "notFoundTitle": "Sayfa Bulunamadı",
   "changeLanguage": "Dili Değiştir",
   "currentLanguage": "Geçerli Dil",
-  "turkish": "Türkçe",
-  "english": "İngilizce",
   "pages": {
     "index": "Ana Sayfa",
     "itineraries": "Rotalarım",
     "settings": "Ayarlar"
+  },
+  "settingsPage": {
+    "language": {
+      "title": "Dil",
+      "description": "Uygulama dilini değiştirin"
+    }
+  },
+  "languages": {
+    "tr": "🇹🇷 Türkçe",
+    "en": "🇺🇸 İngilizce"
   }
 }

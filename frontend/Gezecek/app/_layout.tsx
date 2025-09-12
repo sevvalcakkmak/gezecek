@@ -1,71 +1,62 @@
-import React from 'react';
+import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
+import '@/global.css';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
+} from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
-import { Provider as PaperProvider, MD3DarkTheme, MD3LightTheme } from 'react-native-paper';
-import { Drawer } from 'expo-router/drawer';
-import { useColorScheme } from '@/hooks/useColorScheme';
-import DrawerContent from '@/components/navigation/DrawerContent';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { LocalizationProvider } from '@/contexts/LocalizationProvider';
-import { useTranslation } from 'react-i18next';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect, useState } from 'react';
+import { useColorScheme } from '@/components/useColorScheme';
+import { Slot } from 'expo-router';
+import { I18nextProvider } from 'react-i18next';
+import i18n, { i18nReady } from '@/i18n';
 
-function AppDrawer({ theme, isDark }: { theme: any; isDark: boolean }) {
-  const { t } = useTranslation();
-  return (
-    <Drawer
-      screenOptions={{
-        drawerPosition: 'right',
-        headerShown: true,
-        headerTitle: t('appTitle'),
-        headerTintColor: theme.colors.onSurface,
-        headerStyle: { backgroundColor: theme.colors.surface },
-        swipeEdgeWidth: 90,
-        drawerType: 'slide'
-      }}
-      drawerContent={(props: any) => (
-        <DrawerContent
-          {...props}
-          isDark={isDark}
-        />
-      )}
-    >
-      <Drawer.Screen name="index" options={{ title: t('home'), drawerIcon: ({ color, size }) => <MaterialIcons name="home" size={size} color={color} /> }} />
-      <Drawer.Screen name="itineraries" options={{ title: t('itineraries'), drawerIcon: ({ color, size }) => <MaterialIcons name="route" size={size} color={color} /> }} />
-      <Drawer.Screen name="settings" options={{ title: t('settings'), drawerIcon: ({ color, size }) => <MaterialIcons name="settings" size={size} color={color} /> }} />
-      <Drawer.Screen name="+not-found" options={{ title: t('notFoundTitle'), drawerIcon: ({ color, size }) => <></> }} />
-    </Drawer>
-  );
-}
+export {
+  // Catch any errors thrown by the Layout component.
+  ErrorBoundary,
+} from 'expo-router';
+
+SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const systemScheme = useColorScheme();
-  const colorScheme = systemScheme ?? 'light';
-  const isDark = colorScheme === 'dark';
-
-  const [loaded] = useFonts({
+  const [loaded, error] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    ...FontAwesome.font,
   });
 
-  const base = isDark ? MD3DarkTheme : MD3LightTheme;
-  const theme = React.useMemo(() => ({
-    ...base,
-    colors: {
-      ...base.colors,
-      primary: '#2f86a4ff',
-      secondary: '#ffb300',
-    },
-  }), [base]);
+  const [i18nLoaded, setI18nLoaded] = useState(false);
+  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
+  useEffect(() => {
+    if (error) throw error;
+  }, [error]);
 
-  if (!loaded) return null;
+  useEffect(() => {
+    i18nReady.finally(() => setI18nLoaded(true));
+  }, []);
+
+  useEffect(() => {
+    if (loaded && i18nLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded, i18nLoaded]);
+  if (!loaded || !i18nLoaded) return null;
+  return <RootLayoutNav />;
+}
+
+function RootLayoutNav() {
+  const colorScheme = useColorScheme();
+  const [colorMode, setColorMode] = useState<'light' | 'dark'>(colorScheme || 'light');
 
   return (
-    <PaperProvider theme={theme}>
-      <LocalizationProvider>
-        <AppDrawer theme={theme} isDark={isDark} />
-        <StatusBar style={isDark ? 'light' : 'dark'} />
-      </LocalizationProvider>
-    </PaperProvider>
+    <I18nextProvider i18n={i18n}>
+      <GluestackUIProvider mode={colorMode}>
+        <ThemeProvider value={colorMode === 'dark' ? DarkTheme : DefaultTheme}>
+          <Slot />
+        </ThemeProvider>
+      </GluestackUIProvider>
+    </I18nextProvider>
   );
 }
