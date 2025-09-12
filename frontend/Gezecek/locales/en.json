@@ -6,11 +6,19 @@
   "notFoundTitle": "Page Not Found",
   "changeLanguage": "Change Language",
   "currentLanguage": "Current Language",
-  "turkish": "Turkish",
-  "english": "English",
   "pages": {
     "index": "Home",
     "itineraries": "Itineraries",
     "settings": "Settings"
+  },
+  "settingsPage": {
+    "language": {
+      "title": "Language",
+      "description": "Change the application language"
+    }
+  },
+  "languages": {
+    "tr": "🇹🇷 Turkish",
+    "en": "🇺🇸 English"
   }
 }
