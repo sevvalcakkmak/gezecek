@@ -1,15 +1,22 @@
 {
   "appTitle": "Gezecek",
-  "home": "Home",
-  "itineraries": "Itineraries",
-  "settings": "Settings",
   "notFoundTitle": "Page Not Found",
   "changeLanguage": "Change Language",
+  "changing": "Changing...",
   "currentLanguage": "Current Language",
   "pages": {
-    "index": "Home",
+    "home": "Home",
     "itineraries": "Itineraries",
     "settings": "Settings"
+  },
+  "homePage": {
+    "welcomeMessage": "Welcome to Gezecek!",
+    "intro": "Plan your trips and explore new destinations with ease.",
+    "getStarted": "Plan Your Itinerary!",
+    "origin": "Origin",
+    "destination": "Destination",
+    "startDate": "Start Date",
+    "endDate": "End Date"
   },
   "settingsPage": {
     "language": {
