@@ -13,7 +13,8 @@ import { Divider } from '@/components/ui/divider';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { BackHandler, Animated, FlatList, Pressable as RNPressable } from 'react-native';
-// Lazy import cities data to avoid blocking main thread
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 let citiesRaw: any[] = [];
 let citiesPromise: Promise<any[]> | null = null;
 
@@ -33,7 +34,7 @@ const loadCitiesData = async (): Promise<any[]> => {
 };
 
 export interface City {
-    id: string; // derived from geonameid or name-country-lat-lng
+    id: string;
     name: string;
     country: string;
     subcountry: string;
@@ -60,6 +61,7 @@ const CityPicker: React.FC<CityPickerProps> = ({
     enforceSelection = false
 }) => {
     const { t } = useTranslation();
+    const insets = useSafeAreaInsets();
     const [searchQuery, setSearchQuery] = React.useState('');
     const [debouncedQuery, setDebouncedQuery] = React.useState('');
     const [isOpen, setIsOpen] = React.useState(false);
@@ -74,7 +76,7 @@ const CityPicker: React.FC<CityPickerProps> = ({
         const timer = setTimeout(() => {
             setDebouncedQuery(searchQuery);
             setIsSearching(false);
-        }, 150); // Faster debounce
+        }, 150);
 
         if (searchQuery.trim()) {
             setIsSearching(true);
@@ -85,12 +87,11 @@ const CityPicker: React.FC<CityPickerProps> = ({
         return () => clearTimeout(timer);
     }, [searchQuery]);
 
-    // Load cities data asynchronously
     React.useEffect(() => {
         let isMounted = true;
 
         const loadData = async () => {
-            if (allCities.length > 0) return; // Already loaded
+            if (allCities.length > 0) return;
 
             setIsLoading(true);
             try {
@@ -98,11 +99,10 @@ const CityPicker: React.FC<CityPickerProps> = ({
                 if (isMounted) {
                     const enrichedCities = data
                         .filter((c: any) => {
-                            // Filter out invalid entries only
                             return c && c.name && c.country && c.lat && c.lng;
                         })
                         .map((c: any, index: number) => ({
-                            id: String(c.geonameid || `${c.name}-${c.country}-${c.lat}-${c.lng}`), // Unique ID with lat/lng
+                            id: String(c.geonameid || `${c.name}-${c.country}-${c.lat}-${c.lng}`),
                             name: String(c.name || ''),
                             country: String(c.country || ''),
                             subcountry: String(c.subcountry || ''),
@@ -128,13 +128,10 @@ const CityPicker: React.FC<CityPickerProps> = ({
         };
     }, []);
 
-    // Load recent searches from storage (could be AsyncStorage in real app)
     React.useEffect(() => {
-        // For demo purposes, using empty array. In real app, load from AsyncStorage
         setRecentSearches([]);
     }, []);
 
-    // Handle Android back button
     React.useEffect(() => {
         const backAction = () => {
             if (isOpen) {
@@ -199,35 +196,6 @@ const CityPicker: React.FC<CityPickerProps> = ({
             .replace(/ç/g, 'c');
     };
 
-    // Convert country code to readable country name
-    const getCountryName = (countryCode: string): string => {
-        const countryNames: { [key: string]: string } = {
-            'TR': 'Türkiye',
-            'US': 'Amerika Birleşik Devletleri',
-            'GB': 'Birleşik Krallık',
-            'DE': 'Almanya',
-            'FR': 'Fransa',
-            'IT': 'İtalya',
-            'ES': 'İspanya',
-            'NL': 'Hollanda',
-            'BE': 'Belçika',
-            'CH': 'İsviçre',
-            'AT': 'Avusturya',
-            'GR': 'Yunanistan',
-            'RU': 'Rusya',
-            'CN': 'Çin',
-            'JP': 'Japonya',
-            'KR': 'Güney Kore',
-            'IN': 'Hindistan',
-            'AU': 'Avustralya',
-            'CA': 'Kanada',
-            'BR': 'Brezilya',
-            'AR': 'Arjantin',
-            'MX': 'Meksika'
-        };
-        return countryNames[countryCode] || countryCode;
-    };
-
     // Derive popular cities internally - Turkey first, then other countries
     const popular: City[] = React.useMemo(() => {
         if (allCities.length === 0) return [];
@@ -286,9 +254,8 @@ const CityPicker: React.FC<CityPickerProps> = ({
 
         const normalizedQuery = normalizeText(debouncedQuery);
         const results: City[] = [];
-        const maxResults = 30; // Reduce results for better performance
+        const maxResults = 30;
 
-        // Use a simple loop for better performance
         for (let i = 0; i < allCities.length && results.length < maxResults; i++) {
             const city = allCities[i];
             if (!city || !city.name) continue;
@@ -301,24 +268,20 @@ const CityPicker: React.FC<CityPickerProps> = ({
             }
         }
 
-        // Sort results for relevance
         results.sort((a, b) => {
             const aName = normalizeText(a.name || '');
             const bName = normalizeText(b.name || '');
 
-            // Exact match gets highest priority
             const aExact = aName === normalizedQuery;
             const bExact = bName === normalizedQuery;
             if (aExact && !bExact) return -1;
             if (!aExact && bExact) return 1;
 
-            // Starts with query gets second priority  
             const aStarts = aName.startsWith(normalizedQuery);
             const bStarts = bName.startsWith(normalizedQuery);
             if (aStarts && !bStarts) return -1;
             if (!aStarts && bStarts) return 1;
 
-            // Shorter names get third priority (more relevant)
             return aName.length - bName.length;
         });
 
@@ -326,8 +289,7 @@ const CityPicker: React.FC<CityPickerProps> = ({
     }, [debouncedQuery, allCities]);
 
     const displayedPopular = React.useMemo(() => {
-        // Show all popular cities in country priority order (Turkey first, then others)
-        return popular; // popular already contains cities sorted by country priority
+        return popular;
     }, [popular]);
 
     const renderInlineInput = (
@@ -383,7 +345,7 @@ const CityPicker: React.FC<CityPickerProps> = ({
     };
 
     const renderCityItemLegacy = (city: City) => {
-        const countryName = getCountryName(city.country);
+        const countryName = city.country;
         const locationText = city.subcountry ? `${city.subcountry}, ${countryName}` : countryName;
 
         return (
@@ -425,29 +387,30 @@ const CityPicker: React.FC<CityPickerProps> = ({
 
             <Modal isOpen={isOpen} onClose={handleClose} size="full">
                 <ModalBackdrop />
-                <ModalContent className="flex-1 max-w-full max-h-full h-full w-full m-0">
-                    {/* Header */}
+                <ModalContent className="flex-1 m-0" style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
                     <ModalHeader className="border-b border-outline-200 bg-background-0">
                         <HStack className="items-center justify-between w-full px-2">
                             <Button
-                                variant="ghost"
+                                variant="outline"
                                 size="sm"
                                 onPress={handleClose}
                                 action="secondary"
+                                className='mb-1'
                             >
                                 <ButtonIcon
                                     as={ArrowLeftIcon}
                                     size="lg"
                                 />
                             </Button>
-                            <Heading size="lg" className="text-typography-900">
+                            <Heading size='xl'>
                                 {mode === 'origin' ? t('homePage.origin') : t('homePage.destination')}
                             </Heading>
                             <Button
-                                variant="ghost"
+                                variant="outline"
                                 size="sm"
                                 onPress={handleClose}
                                 action="secondary"
+                                className='mb-1'
                             >
                                 <ButtonIcon
                                     as={CloseIcon}
@@ -457,8 +420,7 @@ const CityPicker: React.FC<CityPickerProps> = ({
                         </HStack>
                     </ModalHeader>
 
-                    {/* Search Input */}
-                    <VStack space="md" className="px-4 py-4 border-b">
+                    <VStack space="md" className="px-4 py-4">
                         <Input size="lg" variant="rounded">
                             <InputField
                                 placeholder={t('cityPicker.searchPlaceholder')}
@@ -472,10 +434,10 @@ const CityPicker: React.FC<CityPickerProps> = ({
                         </Input>
                     </VStack>
 
+                    <Divider />
+
                     <VStack className="flex-1">
-                        {/* Replace ScrollView with proper FlatList structure */}
                         {debouncedQuery.trim() ? (
-                            /* Search Results Mode */
                             isSearching || isLoading ? (
                                 <VStack className="px-6 py-12 items-center justify-center flex-1">
                                     <Text className="text-center text-typography-600 text-lg">
@@ -507,15 +469,14 @@ const CityPicker: React.FC<CityPickerProps> = ({
                                 </VStack>
                             )
                         ) : (
-                            /* Normal Mode - Show Popular Cities First, Then All Cities */
                             <FlatList
                                 data={[
-                                    ...displayedPopular, // Popular cities first
+                                    ...displayedPopular,
                                     ...allCities
                                         .filter(city =>
-                                            !displayedPopular.find(pop => pop.id === city.id) // Avoid duplicates
+                                            !displayedPopular.find(pop => pop.id === city.id)
                                         )
-                                        .slice(0, 100) // Limit remaining cities
+                                        .slice(0, 100)
                                 ]}
                                 renderItem={renderCityItem}
                                 keyExtractor={(item) => item.id}
@@ -524,7 +485,6 @@ const CityPicker: React.FC<CityPickerProps> = ({
                                 removeClippedSubviews={true}
                                 ListHeaderComponent={() => (
                                     <VStack>
-                                        {/* Popular Cities Badge Section */}
                                         <VStack className="px-6 py-4">
                                             <Text className="text-sm font-semibold mb-3 text-typography-600 uppercase tracking-wide">
                                                 {t('cityPicker.popular')}
@@ -534,9 +494,8 @@ const CityPicker: React.FC<CityPickerProps> = ({
                                             </HStack>
                                         </VStack>
 
-                                        <Divider className="my-2" />
+                                        <Divider className="mb-2" />
 
-                                        {/* Recent Searches */}
                                         {recentSearches.length > 0 && (
                                             <>
                                                 <HStack className="px-6 py-4 justify-between items-center">
@@ -559,15 +518,6 @@ const CityPicker: React.FC<CityPickerProps> = ({
                                                 </VStack>
                                                 <Divider className="my-2" />
                                             </>
-                                        )}
-
-                                        {/* Cities List Header */}
-                                        {!isLoading && allCities.length > 0 && (
-                                            <VStack className="px-6 py-4 bg-background-50">
-                                                <Text className="text-sm font-semibold text-typography-600 uppercase tracking-wide">
-                                                    {displayedPopular.length > 0 ? t('cityPicker.popular') + ' + ' + t('cityPicker.allCities') : t('cityPicker.allCities')}
-                                                </Text>
-                                            </VStack>
                                         )}
                                     </VStack>
                                 )}
