@@ -38,10 +38,18 @@
     "language": {
       "title": "Language",
       "description": "Change the application language"
+    },
+    "theme": {
+      "title": "Theme",
+      "description": "Change the application theme"
     }
   },
   "languages": {
     "tr": "🇹🇷 Turkish",
     "en": "🇺🇸 English"
+  },
+  "themes": {
+    "light": "Light",
+    "dark": "Dark"
   }
 }

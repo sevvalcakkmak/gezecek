@@ -9,10 +9,10 @@ import {
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
-import { useColorScheme } from '@/components/useColorScheme';
 import { Slot } from 'expo-router';
 import { I18nextProvider } from 'react-i18next';
 import i18n, { i18nReady } from '@/i18n';
+import { ThemeProvider as CustomThemeProvider, useTheme } from '@/contexts/ThemeContext';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -47,16 +47,28 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-  const colorScheme = useColorScheme();
-  const [colorMode, setColorMode] = useState<'light' | 'dark'>(colorScheme || 'light');
-
   return (
     <I18nextProvider i18n={i18n}>
-      <GluestackUIProvider mode={colorMode}>
-        <ThemeProvider value={colorMode === 'dark' ? DarkTheme : DefaultTheme}>
-          <Slot />
-        </ThemeProvider>
-      </GluestackUIProvider>
+      <CustomThemeProvider>
+        <ThemedApp />
+      </CustomThemeProvider>
     </I18nextProvider>
+  );
+}
+
+function ThemedApp() {
+  const { resolvedTheme, isReady } = useTheme();
+
+  // Don't render until theme is ready
+  if (!isReady) {
+    return null;
+  }
+
+  return (
+    <GluestackUIProvider mode={resolvedTheme}>
+      <ThemeProvider value={resolvedTheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <Slot />
+      </ThemeProvider>
+    </GluestackUIProvider>
   );
 }
