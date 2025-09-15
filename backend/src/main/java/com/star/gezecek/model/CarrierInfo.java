@@ -12,13 +12,9 @@ import org.springframework.data.redis.core.RedisHash;
 @NoArgsConstructor
 @AllArgsConstructor
 @RedisHash("carrier")
-public class Carrier {
+public class CarrierInfo {
     @Id
     private String code; // IATA code (e.g., "AA")
-    private String icaoCode; // ICAO code (e.g., "AAL")
     private String name;
     private String logo;
-    private String website;
-    private String country;
-    private Boolean isLowCost;
 }

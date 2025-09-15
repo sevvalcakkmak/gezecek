@@ -19,7 +19,6 @@ import java.util.List;
 @RedisHash("flight_search_params")
 public class FlightSearchParams {
     @Id
-    private String searchId;
     private String tripType; // ONE_WAY, ROUND_TRIP
     private String originLocationId;
     private String destinationLocationId;

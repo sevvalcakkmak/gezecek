@@ -1,5 +1,6 @@
 package com.star.gezecek.dto.response;
 
+import com.star.gezecek.model.enums.CabinClass;
 import lombok.Data;
 
 @Data
@@ -12,7 +13,5 @@ public class Segment {
     private String code;
     private Carrier carrier;
     private Carrier operatingCarrier;
-    private String cabinClass;
-    private Object hiddenDestination; // Could be more specific if structure is known
-    private Object throwawayDestination; // Could be more specific if structure is known
+    private CabinClass cabinClass;
 }

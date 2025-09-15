@@ -52,6 +52,8 @@ public class FlightSearchService {
         String searchId = UUID.randomUUID().toString();
         log.info("Starting flight search with ID: {}", searchId);
 
+        long start = System.currentTimeMillis(); // Start time
+
         try {
 
             // Convert user request to external API format
@@ -62,6 +64,10 @@ public class FlightSearchService {
 
             // Map API response to our domain models
             FlightSearchResult result = processApiResponse(apiResponse, userRequest, searchId);
+
+            // Calculate
+            long processingTime = System.currentTimeMillis() - start;
+            result.setProcessingTimeMs(processingTime);
 
             log.info("Flight search completed successfully. Search ID: {}", searchId);
             return result;
@@ -105,7 +111,7 @@ public class FlightSearchService {
         apiRequest.setSortBy(userRequest.getSortBy() != null ? userRequest.getSortBy() : SortBy.QUALITY);
         apiRequest.setSortOrder(userRequest.getSortOrder() != null ? userRequest.getSortOrder() : SortOrder.ASCENDING);
         apiRequest.setPriceStart(userRequest.getPriceStart() != null ? userRequest.getPriceStart() : 0);
-        apiRequest.setPriceEnd(userRequest.getPriceEnd() != null ? userRequest.getPriceEnd() : 2000);
+        apiRequest.setPriceEnd(userRequest.getPriceEnd() != null ? userRequest.getPriceEnd() : 0);
         apiRequest.setLimit(userRequest.getLimit() != null ? userRequest.getLimit() : 10);
 
         return apiRequest;
@@ -120,15 +126,6 @@ public class FlightSearchService {
         return searchResultRepository.save(result);
     }
 
-    private FlightSearchResult createFailedResult(String searchId, String errorMessage) {
-        FlightSearchResult result = new FlightSearchResult();
-        result.setSearchId(searchId);
-        result.setTimestamp(LocalDateTime.now());
-        result.setStatus("FAILED");
-        result.setErrorMessage(errorMessage);
-
-        return searchResultRepository.save(result);
-    }
 
     // Other methods for retrieving data
     public FlightSearchResult getSearchResult(String searchId) {

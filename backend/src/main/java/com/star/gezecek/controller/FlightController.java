@@ -30,7 +30,7 @@ public class FlightController {
 
     @GetMapping("/test")
     public ExternalApiResponse testFlights() {
-        String url = "https://kiwi-com-cheap-flights.p.rapidapi.com/one-way?source=City:ankara_tr&destination=City:istanbul_tr";
+        String url = "https://kiwi-com-cheap-flights.p.rapidapi.com/round-trip?source=City:ankara_tr&destination=City:istanbul_tr";
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("x-rapidapi-host", apiConfig.getApiHost());

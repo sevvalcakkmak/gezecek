@@ -1,5 +1,6 @@
 package com.star.gezecek.dto.response;
 
+import com.star.gezecek.model.Station;
 import lombok.Data;
 
 @Data

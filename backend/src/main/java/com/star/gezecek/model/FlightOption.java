@@ -1,6 +1,7 @@
 package com.star.gezecek.model;
 
 import com.star.gezecek.dto.response.FlightPrice;
+import com.star.gezecek.model.enums.CabinClass;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,4 +19,14 @@ public class FlightOption {
     private String id;
     private FlightPrice price;
     private String bookingUrl;
+    private String providerName;
+    private CarrierInfo carrier;
+    private CarrierInfo operatingCarrier;
+    private Airport departure;
+    private Airport arrival;
+    private Integer duration; // in seconds
+    private BaggageInfo baggageInfo;
+    private CabinClass cabinClass;
+    private String searchId; // Reference to the original search
 }
+

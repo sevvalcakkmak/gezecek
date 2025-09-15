@@ -6,7 +6,6 @@ import java.util.List;
 
 @Data
 public class Sector {
-    private String id;
     private List<SectorSegment> sectorSegments;
     private Integer duration;
 }

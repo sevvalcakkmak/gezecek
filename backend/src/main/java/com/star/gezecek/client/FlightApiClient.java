@@ -38,7 +38,7 @@ public class FlightApiClient {
 
         // Optional: outbound dates
         if (apiRequest.getOutboundDepartmentDateStart() != null) {
-            builder.queryParam("outboundDepartureDateStart", apiRequest.getOutboundDepartmentDateStart());
+            builder.queryParam("outboundDepartmentDateStart", apiRequest.getOutboundDepartmentDateStart());
         }
         // Optional: inbound dates (only for round trip)
         if (tripType == TripType.ROUND_TRIP) {
