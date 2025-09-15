@@ -6,6 +6,6 @@ import java.util.List;
 
 @Data
 public class BagTier {
-    //private FlightPrice tierPrice;
+    private FlightPrice tierPrice;
     private List<Bag> bags;
 }
