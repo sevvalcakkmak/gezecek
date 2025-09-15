@@ -112,7 +112,24 @@ const CityPicker: React.FC<CityPickerProps> = ({
                             admin1: c.admin1,
                             admin2: c.admin2,
                         }));
-                    setAllCities(enrichedCities);
+
+                    // Deduplicate cities by name-country combination
+                    const cityMap = new Map<string, City>();
+                    enrichedCities.forEach(city => {
+                        const key = `${city.name.toLowerCase()}-${city.country}`;
+                        if (!cityMap.has(key)) {
+                            cityMap.set(key, city);
+                        } else {
+                            // If duplicate, keep the one with higher geonameid (more important)
+                            const existing = cityMap.get(key)!;
+                            if (city.geonameid > existing.geonameid) {
+                                cityMap.set(key, city);
+                            }
+                        }
+                    });
+
+                    const uniqueCities = Array.from(cityMap.values());
+                    setAllCities(uniqueCities);
                 }
             } catch (error) {
                 if (isMounted) setAllCities([]);
