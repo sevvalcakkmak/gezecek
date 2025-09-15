@@ -1,15 +1,33 @@
 {
   "appTitle": "Gezecek",
-  "home": "Ana Sayfa",
-  "itineraries": "Rotalarım",
-  "settings": "Ayarlar",
   "notFoundTitle": "Sayfa Bulunamadı",
   "changeLanguage": "Dili Değiştir",
+  "changing": "Değiştiriliyor...",
   "currentLanguage": "Geçerli Dil",
   "pages": {
-    "index": "Ana Sayfa",
-    "itineraries": "Rotalarım",
+    "home": "Ana Sayfa",
+    "itineraries": "Geziler",
     "settings": "Ayarlar"
+  },
+  "homePage": {
+    "welcomeMessage": "Gezecek'e Hoş Geldiniz!",
+    "intro": "Gezilerinizi planlayın ve yeni destinasyonları kolayca keşfedin.",
+    "getStarted": "Gezini Planla!",
+    "origin": "Kalkış Yeri",
+    "destination": "Varış Yeri",
+    "swap": "Kalkış ve varış yerini değiştir",
+    "startDate": "Başlangıç Tarihi",
+    "endDate": "Bitiş Tarihi"
+  },
+  "cityPicker": {
+    "searchPlaceholder": "Şehir ara...",
+    "popular": "Popüler Şehirler",
+    "noResults": "Sonuç bulunamadı",
+    "loading": "Şehirler yükleniyor...",
+    "close": "Kapat",
+    "clearRecent": "Geçmişi Temizle",
+    "recent": "Son Arananlar",
+    "allCities": "Tüm Şehirler"
   },
   "settingsPage": {
     "language": {

@@ -1,5 +1,5 @@
 {
-  "name": "starter-kit-expo",
+  "name": "gezecek",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
@@ -18,6 +18,7 @@
     "@expo/html-elements": "^0.12.5",
     "@expo/vector-icons": "^14.1.0",
     "@gluestack-ui/core": "3.0.2",
+    "@gluestack-ui/transitions": "^0.1.11",
     "@gluestack-ui/utils": "3.0.2",
     "@gorhom/bottom-sheet": "^5.0.0-alpha.11",
     "@legendapp/motion": "^2.4.0",
@@ -25,6 +26,7 @@
     "@react-native-async-storage/async-storage": "^2.2.0",
     "@react-navigation/native": "^7.1.6",
     "babel-plugin-module-resolver": "^5.0.2",
+    "cities.json": "^1.1.50",
     "dom-helpers": "^5.2.1",
     "expo": "53.0.20",
     "expo-font": "~13.3.1",

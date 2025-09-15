@@ -15,7 +15,7 @@ export default function TabLayout() {
   const { t } = useTranslation();
   return (
     <Tabs
-      initialRouteName='settings'
+      initialRouteName='Home'
       screenOptions={{
         // Disable the static render of the header on web
         // to prevent a hydration error in React Navigation v6.
@@ -23,23 +23,23 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="tab1"
+        name="Home"
         options={{
-          title: 'Tab 1',
-          tabBarIcon: ({ color }) => <TabBarIcon name="star-o" color={color} />,
+          title: t('pages.home'),
+          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
         }}
       />
       <Tabs.Screen
-        name="tab2"
+        name="Itineraries"
         options={{
-          title: 'Tab 2',
-          tabBarIcon: ({ color }) => <TabBarIcon name="star-o" color={color} />,
+          title: t('pages.itineraries'),
+          tabBarIcon: ({ color }) => <TabBarIcon name="map" color={color} />,
         }}
       />
       <Tabs.Screen
-        name="settings"
+        name="Settings"
         options={{
-          title: t('settings'),
+          title: t('pages.settings'),
           tabBarIcon: ({ color }) => <TabBarIcon name="gear" color={color} />,
         }}
       />
