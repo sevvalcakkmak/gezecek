@@ -38,10 +38,18 @@
     "language": {
       "title": "Dil",
       "description": "Uygulama dilini değiştirin"
+    },
+    "theme": {
+      "title": "Tema",
+      "description": "Uygulama temasını değiştirin"
     }
   },
   "languages": {
     "tr": "🇹🇷 Türkçe",
     "en": "🇺🇸 İngilizce"
+  },
+  "themes": {
+    "light": "Açık",
+    "dark": "Koyu"
   }
 }
