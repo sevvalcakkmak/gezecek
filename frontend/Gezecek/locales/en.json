@@ -29,6 +29,11 @@
     "recent": "Recent Searches",
     "allCities": "All Cities"
   },
+  "datePicker": {
+    "selectDate": "Select Date",
+    "invalidDateTitle": "Invalid Date",
+    "invalidDateDescription": "Please select a date after today."
+  },
   "settingsPage": {
     "language": {
       "title": "Language",

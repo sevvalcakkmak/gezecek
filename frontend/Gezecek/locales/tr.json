@@ -29,6 +29,11 @@
     "recent": "Son Arananlar",
     "allCities": "Tüm Şehirler"
   },
+  "datePicker": {
+    "selectDate": "Tarih Seçin",
+    "invalidDateTitle": "Geçersiz Tarih",
+    "invalidDateDescription": "Lütfen bugünden sonraki bir tarih seçin."
+  },
   "settingsPage": {
     "language": {
       "title": "Dil",
