@@ -7,14 +7,14 @@ import { Heading } from '@/components/ui/heading';
 import { Grid, GridItem } from '@/components/ui/grid';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import CityPicker from '@/components/home/CityPicker';
+import CityPicker, { City } from '@/components/home/CityPicker';
 import { Divider } from '@/components/ui/divider';
 import { RepeatIcon } from '@/components/ui/icon';
 import { Animated } from 'react-native';
 const Home = () => {
   const { t } = useTranslation();
-  const [origin, setOrigin] = React.useState('');
-  const [destination, setDestination] = React.useState('');
+  const [origin, setOrigin] = React.useState<City | null>(null);
+  const [destination, setDestination] = React.useState<City | null>(null);
   const [swapAngle, setSwapAngle] = React.useState(90);
   const rotation = React.useRef(new Animated.Value(90)).current;
   React.useEffect(() => {
@@ -31,11 +31,9 @@ const Home = () => {
   });
   const AnimatedButtonIcon = React.useMemo(() => Animated.createAnimatedComponent(ButtonIcon as any), []);
   const swap = () => {
-    setOrigin((o) => {
-      const tmp = destination;
-      setDestination(o);
-      return tmp;
-    });
+    const tempOrigin = origin;
+    setOrigin(destination);
+    setDestination(tempOrigin);
     setSwapAngle((a) => a + 180);
   };
   return <Grid className="gap-5" _extra={{
@@ -61,8 +59,7 @@ const Home = () => {
           mode='origin'
           enforceSelection
           value={origin}
-          onChangeText={setOrigin}
-          onSelect={(c) => setOrigin(c.name)}
+          onSelect={(city) => setOrigin(city)}
         />
 
         <Grid className="my-6 gap-5" _extra={{
@@ -98,10 +95,8 @@ const Home = () => {
           placeholder={t("homePage.destination")}
           mode='destination'
           enforceSelection
-          preferPlacement='above'
           value={destination}
-          onChangeText={setDestination}
-          onSelect={(c) => setDestination(c.name)}
+          onSelect={(city) => setDestination(city)}
         />
       </Card>
     </GridItem>

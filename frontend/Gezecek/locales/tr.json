@@ -15,8 +15,19 @@
     "getStarted": "Gezini Planla!",
     "origin": "Kalkış Yeri",
     "destination": "Varış Yeri",
+    "swap": "Kalkış ve varış yerini değiştir",
     "startDate": "Başlangıç Tarihi",
     "endDate": "Bitiş Tarihi"
+  },
+  "cityPicker": {
+    "searchPlaceholder": "Şehir ara...",
+    "popular": "Popüler Şehirler",
+    "noResults": "Sonuç bulunamadı",
+    "loading": "Şehirler yükleniyor...",
+    "close": "Kapat",
+    "clearRecent": "Geçmişi Temizle",
+    "recent": "Son Arananlar",
+    "allCities": "Tüm Şehirler"
   },
   "settingsPage": {
     "language": {

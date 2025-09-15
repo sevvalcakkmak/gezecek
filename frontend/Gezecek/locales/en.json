@@ -15,8 +15,19 @@
     "getStarted": "Plan Your Itinerary!",
     "origin": "Origin",
     "destination": "Destination",
+    "swap": "Swap origin and destination",
     "startDate": "Start Date",
     "endDate": "End Date"
+  },
+  "cityPicker": {
+    "searchPlaceholder": "Search city...",
+    "popular": "Popular Cities",
+    "noResults": "No results found",
+    "loading": "Loading cities...",
+    "close": "Close",
+    "clearRecent": "Clear Recent",
+    "recent": "Recent Searches",
+    "allCities": "All Cities"
   },
   "settingsPage": {
     "language": {
