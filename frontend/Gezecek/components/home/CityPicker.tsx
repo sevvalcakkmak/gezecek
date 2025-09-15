@@ -320,7 +320,8 @@ const CityPicker: React.FC<CityPickerProps> = ({
             ]}
         >
             <Input
-                size={'lg'}
+                className='h-16'
+                size={'xl'}
                 variant={'rounded'}
                 isInvalid={false}
                 isDisabled={false}
@@ -330,7 +331,9 @@ const CityPicker: React.FC<CityPickerProps> = ({
                     editable={false}
                     pointerEvents="none"
                     value={value?.name || ''}
+                    size={'xl'}
                     placeholder={placeholder || t('cityPicker.searchPlaceholder')}
+                    className="font-bold"
                 />
                 <InputSlot className="pr-4" pointerEvents="none">
                     <InputIcon as={SearchIcon} />
@@ -347,7 +350,6 @@ const CityPicker: React.FC<CityPickerProps> = ({
             <Pressable
                 onPress={() => handleSelectCity(city)}
                 className="mx-4 my-1 p-4 rounded-lg border border-outline-200 bg-background-0"
-                android_ripple={{ color: '#f3f4f6' }}
             >
                 <VStack space="xs">
                     <Text size="lg" className="font-semibold text-typography-900">
@@ -370,7 +372,6 @@ const CityPicker: React.FC<CityPickerProps> = ({
                 key={city.id}
                 onPress={() => handleSelectCity(city)}
                 className="mx-4 my-1 p-4 rounded-lg border border-outline-200 bg-background-0"
-                android_ripple={{ color: '#f3f4f6' }}
             >
                 <VStack space="xs">
                     <Text size="lg" className="font-semibold text-typography-900">
@@ -444,6 +445,7 @@ const CityPicker: React.FC<CityPickerProps> = ({
                                 value={searchQuery}
                                 onChangeText={setSearchQuery}
                                 autoFocus
+                                className="font-bold"
                             />
                             <InputSlot className="pr-4">
                                 <InputIcon as={SearchIcon} />
@@ -469,14 +471,8 @@ const CityPicker: React.FC<CityPickerProps> = ({
                                     maxToRenderPerBatch={10}
                                     windowSize={10}
                                     removeClippedSubviews={true}
-                                    ListHeaderComponent={() => (
-                                        <VStack className="px-6 py-4 bg-background-50">
-                                            <Text className="text-sm font-semibold text-typography-600 uppercase tracking-wide">
-                                                {t('cityPicker.allCities')}
-                                            </Text>
-                                        </VStack>
-                                    )}
                                     showsVerticalScrollIndicator={false}
+                                    className='mt-2'
                                 />
                             ) : (
                                 <VStack className="px-6 py-12 items-center justify-center flex-1">

@@ -11,6 +11,8 @@ import CityPicker, { City } from '@/components/home/CityPicker';
 import { Divider } from '@/components/ui/divider';
 import { RepeatIcon } from '@/components/ui/icon';
 import { Animated } from 'react-native';
+import DatePicker from '@/components/home/DatePicker';
+
 const Home = () => {
   const { t } = useTranslation();
   const [origin, setOrigin] = React.useState<City | null>(null);
@@ -50,21 +52,33 @@ const Home = () => {
       </Card>
     </GridItem>
 
-    <GridItem className="p-6 justify-center" _extra={{
+    <GridItem className=" px-6 justify-center" _extra={{
       className: 'col-span-8'
     }}>
       <Card size={"lg"} variant={"outline"}>
-        <CityPicker
-          placeholder={t("homePage.origin")}
-          mode='origin'
-          enforceSelection
-          value={origin}
-          onSelect={(city) => setOrigin(city)}
-        />
-
         <Grid className="my-6 gap-5" _extra={{
           className: 'grid-cols-8'
         }}>
+
+          <GridItem className="justify-center" _extra={{
+            className: 'col-span-5'
+          }}>
+            <CityPicker
+              placeholder={t("homePage.origin")}
+              mode='origin'
+              enforceSelection
+              value={origin}
+              onSelect={(city) => setOrigin(city)}
+            />
+          </GridItem>
+
+          <GridItem className="justify-center" _extra={{
+            className: 'col-span-3'
+          }}>
+            <DatePicker />
+          </GridItem>
+
+
           <GridItem className="justify-center" _extra={{
             className: 'col-span-3'
           }}>
@@ -89,15 +103,26 @@ const Home = () => {
           }}>
             <Divider />
           </GridItem>
-        </Grid>
 
-        <CityPicker
-          placeholder={t("homePage.destination")}
-          mode='destination'
-          enforceSelection
-          value={destination}
-          onSelect={(city) => setDestination(city)}
-        />
+          <GridItem className="justify-center" _extra={{
+            className: 'col-span-5'
+          }}>
+            <CityPicker
+              placeholder={t("homePage.destination")}
+              mode='destination'
+              enforceSelection
+              value={destination}
+              onSelect={(city) => setDestination(city)}
+            />
+          </GridItem>
+
+          <GridItem className="justify-center" _extra={{
+            className: 'col-span-3'
+          }}>
+            <DatePicker />
+          </GridItem>
+
+        </Grid>
       </Card>
     </GridItem>
 
