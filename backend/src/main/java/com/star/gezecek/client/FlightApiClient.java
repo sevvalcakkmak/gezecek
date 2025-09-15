@@ -31,36 +31,43 @@ public class FlightApiClient {
         String endpoint = tripType == TripType.ROUND_TRIP ? "/round-trip" : "/one-way";
         String baseUrl = apiConfig.getBaseUrl() + endpoint;
 
-        String fullUrl = UriComponentsBuilder.fromUriString(baseUrl)
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(baseUrl)
                 .queryParam("source", apiRequest.getSource())
-                .queryParam("destination", apiRequest.getDestination())
-                .toUriString();
+                .queryParam("destination", apiRequest.getDestination());
 
-        // Optional parametreleri ekle
-            /*if (apiRequest.getDepartureDate() != null) {
-                builder.queryParam("departureDate", apiRequest.getDepartureDate());
-            }
-            if (apiRequest.getReturnDate() != null && tripType == TripType.ROUND_TRIP) {
-                builder.queryParam("returnDate", apiRequest.getReturnDate());
-            }*/
-           /* if (apiRequest.getAdults() != null) {
-                builder.queryParam("adults", apiRequest.getAdults());
-            }
-            if (apiRequest.getChildren() != null) {
-                builder.queryParam("children", apiRequest.getChildren());
-            }
-            if (apiRequest.getInfants() != null) {
-                builder.queryParam("infants", apiRequest.getInfants());
-            }
-            if (apiRequest.getCabinClass() != null) {
-                builder.queryParam("cabinClass", apiRequest.getCabinClass());
-            }
-            if (apiRequest.getMaxStops() != null) {
-                builder.queryParam("maxStops", apiRequest.getMaxStops());
-            }
- */
 
-            log.info("Calling external flight API: {}", fullUrl);
+        // Optional: outbound dates
+        if (apiRequest.getOutboundDepartmentDateStart() != null) {
+            builder.queryParam("outboundDepartureDateStart", apiRequest.getOutboundDepartmentDateStart());
+        }
+        // Optional: inbound dates (only for round trip)
+        if (tripType == TripType.ROUND_TRIP) {
+            if (apiRequest.getInboundDepartureDateStart() != null) {
+                builder.queryParam("inboundDepartureDateStart", apiRequest.getInboundDepartureDateStart());
+            }
+        }
+
+        // Optional: passengers
+        builder.queryParam("adults", apiRequest.getAdults());
+        builder.queryParam("children", apiRequest.getChildren());
+        builder.queryParam("infants", apiRequest.getInfants());
+
+        // Optional: baggage
+        builder.queryParam("handbags", apiRequest.getHandbags());
+        builder.queryParam("holdbags", apiRequest.getHoldbags());
+
+        // Optional: filters
+        if (apiRequest.getCabinClass() != null) builder.queryParam("cabinClass", apiRequest.getCabinClass());
+        if (apiRequest.getSortBy() != null) builder.queryParam("sortBy", apiRequest.getSortBy());
+        if (apiRequest.getSortOrder() != null) builder.queryParam("sortOrder", apiRequest.getSortOrder());
+        builder.queryParam("priceStart", apiRequest.getPriceStart());
+        builder.queryParam("priceEnd", apiRequest.getPriceEnd());
+        builder.queryParam("limit", apiRequest.getLimit());
+        if (apiRequest.getCurrency() != null) builder.queryParam("currency", apiRequest.getCurrency());
+
+        String fullUrl = builder.toUriString();
+
+        log.info("Calling external flight API: {}", fullUrl);
 
         ResponseEntity<ExternalApiResponse> response = restTemplate.exchange(
                 fullUrl, HttpMethod.GET, HttpEntity.EMPTY, ExternalApiResponse.class);

@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -44,6 +46,26 @@ public class FlightDataMapper {
         FlightSearchParams params = new FlightSearchParams();
         params.setOriginLocationId(userRequest.getSource());
         params.setDestinationLocationId(userRequest.getDestination());
+        params.setTripType(String.valueOf(userRequest.getTripType()));
+        if (userRequest.getOutboundDepartmentDateStart() != null) {
+            params.setDepartureDate(LocalDateTime.parse(userRequest.getOutboundDepartmentDateStart()));
+        }
+        if (userRequest.getInboundDepartureDateStart() != null) {
+            params.setReturnDate(LocalDateTime.parse(userRequest.getInboundDepartureDateStart()));
+        }
+        params.setCurrency(userRequest.getCurrency());
+        params.setLocale(userRequest.getLocale());
+        params.setAdults(userRequest.getAdults());
+        params.setChildren(userRequest.getChildren());
+        params.setInfants(userRequest.getInfants());
+        params.setHandbags(userRequest.getHandbags());
+        params.setHoldbags(userRequest.getHoldbags());
+        params.setCabinClass(String.valueOf(userRequest.getCabinClass()));
+        params.setSortBy(String.valueOf(userRequest.getSortBy()));
+        params.setSortOrder(String.valueOf(userRequest.getSortOrder()));
+
+
+
         return params;
     }
 
@@ -62,11 +84,14 @@ public class FlightDataMapper {
                 !itinerary.getBookingOptions().getEdges().isEmpty() &&
                 itinerary.getBookingOptions().getEdges().get(0).getNode() != null) {
 
-            option.setBookingUrl(itinerary.getBookingOptions()
+            String url = itinerary.getBookingOptions()
                     .getEdges()
                     .get(0)
                     .getNode()
-                    .getBookingUrl());
+                    .getBookingUrl();
+
+            // Önüne base URL ekle
+            option.setBookingUrl("https://www.kiwi.com/" + url);
         }
 
         return option;

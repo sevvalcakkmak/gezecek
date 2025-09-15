@@ -1,6 +1,8 @@
 package com.star.gezecek.dto.request;
 
-import com.star.gezecek.model.enums.TripType;
+import com.star.gezecek.model.enums.CabinClass;
+import com.star.gezecek.model.enums.SortBy;
+import com.star.gezecek.model.enums.SortOrder;
 import lombok.Data;
 
 // Simple request DTO for the external API
@@ -8,11 +10,20 @@ import lombok.Data;
 public class ExternalSearchRequest {
     private String source;
     private String destination;
-    private String departureDate;
-    private String returnDate; // null for one-way
-    private String cabinClass;
+    private String inboundDepartureDateStart;
+    private String outboundDepartmentDateStart;
+
+    private String currency;
+    private String locale;
     private int adults;
     private int children;
     private int infants;
-    private int maxStops;
+    private int handbags;
+    private int holdbags;
+    private CabinClass cabinClass;
+    private SortBy sortBy;
+    private SortOrder sortOrder;
+    private int priceStart;
+    private int priceEnd;
+    private int limit;
 }

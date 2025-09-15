@@ -25,14 +25,16 @@ public class FlightSearchParams {
     private String destinationLocationId;
     private LocalDateTime departureDate;
     private LocalDateTime returnDate;
+    private String currency;
+    private String locale;
     private String cabinClass; // ECONOMY, BUSINESS, FIRST
     private String sortBy; // PRICE, DURATION, DEPARTURE_TIME
-    private Integer maxStopsCount;
+    private String sortOrder; // ASCENDING, DESCENDING
     private BigDecimal priceStart;
     private BigDecimal priceEnd;
     private Integer adults;
     private Integer children;
     private Integer infants;
-    private List<String> preferredAirlines;
-    private List<String> excludedAirlines;
+    private Integer handbags;
+    private Integer holdbags;
 }

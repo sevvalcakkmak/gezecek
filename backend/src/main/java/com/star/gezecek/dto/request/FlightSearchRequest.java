@@ -1,5 +1,9 @@
 package com.star.gezecek.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.star.gezecek.model.enums.CabinClass;
+import com.star.gezecek.model.enums.SortBy;
+import com.star.gezecek.model.enums.SortOrder;
 import com.star.gezecek.model.enums.TripType;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -8,40 +12,35 @@ import lombok.Data;
 @Data
 @Builder
 public class FlightSearchRequest {
+
+    @Builder.Default
+    private TripType tripType = TripType.ONE_WAY;
+
     // Required parameters
     @NotNull
     private String source;
     @NotNull
     private String destination;
 
-    @Builder.Default
-    private TripType tripType = TripType.ONE_WAY;
+    // Optional outbound departure date range
 
-    /*@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime departureDate;
-
-    // Optional for round trip
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime returnDate; */
-
-    /*// Optional parameters with defaults
-    @Builder.Default
-    private CabinClass cabinClass = CabinClass.ECONOMY;
-
-    @Builder.Default
-    private Integer adults = 1;
-
+    @JsonProperty("outboundDepartmentDateStart")
+    private String outboundDepartmentDateStart;   // e.g., 2023-07-25T00:00:00
+    @JsonProperty("inboundDepartureDateStart")
+    private String inboundDepartureDateStart; // e.g., 2023-07-22T00:00:00
+    // Optional filters
+    private String currency;
+    private String locale;
+    private Integer adults;
     private Integer children;
     private Integer infants;
+    private Integer handbags;
+    private Integer holdbags;
+    private CabinClass cabinClass;
+    private SortBy sortBy;
+    private SortOrder sortOrder;
+    private Integer priceStart;
+    private Integer priceEnd;
+    private Integer limit;
 
-    @Builder.Default
-    private SortBy sortBy = SortBy.PRICE;
-
-    private Integer maxStops;
-    private BigDecimal minPrice;
-    private BigDecimal maxPrice;
-
-    // Additional filters
-    private List<String> preferredAirlines;
-    private List<String> excludedAirlines; */
 }
