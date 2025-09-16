@@ -17,11 +17,9 @@ import java.util.Map;
 public class Airport {
     @Id
     private String code; // IATA code (e.g., "JFK")
-    private String icaoCode; // ICAO code (e.g., "KJFK")
     private String name;
-    private String city;
-    private String country;
+    private String cityName;
     private String countryCode;
     private Map<String, Double> coordinates; // lat, lng
-    private String timezone;
-}
+    private String localTime;
+    private String utcTime;}

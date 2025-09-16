@@ -1,5 +1,8 @@
 package com.star.gezecek.model;
 
+import com.star.gezecek.dto.response.FlightPrice;
+import com.star.gezecek.model.enums.CabinClass;
+import com.star.gezecek.model.enums.TripType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -7,10 +10,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 @Data
 @Builder
@@ -20,17 +20,32 @@ import java.util.Map;
 public class FlightOption {
     @Id
     private String id;
-    private String searchId; // Reference to FlightSearchResult
-    private BigDecimal price;
-    private String currency;
+    private TripType tripType;
+
+    private Boolean isRoundTrip;
+    private FlightPrice price;
     private String bookingUrl;
-    private Integer quality; // 0-100 score
-    private Integer popularity; // 0-100 score
-    private Boolean isRefundable;
-    private String baggageInfo;
-    private Integer totalDurationMinutes;
-    private Integer totalStops;
-    private List<String> flightSegmentIds; // References to FlightSegment entities
-    private Map<String, Object> additionalInfo; // Extra data from API
-    private LocalDateTime expiresAt;
+    private String providerName;
+    private BaggageInfo baggageInfo;
+    private StopoverInfo stopoverInfo;
+
+    // Outbound
+    private Airport departure; // Outbound departure
+    private Airport arrival; // Outbound arrival
+    private Integer duration; // Outbound duration
+    private CabinClass cabinClass; // Outbound cabin class
+    private CarrierInfo carrier; // Outbound carrier
+    private CarrierInfo operatingCarrier; // Outbound operating carrier
+
+    // Round-trip
+    private Airport returnDeparture;
+    private Airport returnArrival;
+    private Integer returnDuration;
+    private CabinClass returnCabinClass;
+    private CarrierInfo returnCarrier;
+    private CarrierInfo returnOperatingCarrier;
+
+    // Segment list
+    private List<FlightSegment> segments;
 }
+

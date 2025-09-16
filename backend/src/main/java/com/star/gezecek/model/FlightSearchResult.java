@@ -1,9 +1,7 @@
 package com.star.gezecek.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.star.gezecek.model.enums.TripType;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
@@ -18,10 +16,11 @@ import java.util.List;
 public class FlightSearchResult {
     @Id
     private String searchId;
+    private TripType tripType;
     private LocalDateTime timestamp;
     private Integer totalResults;
     private FlightSearchParams searchParams;
-    private List<String> flightOptionIds; // References to FlightOption entities
+    private List<FlightOption> flightOptions; //FlightOption entities
     private String status; // SEARCHING, COMPLETED, FAILED
     private String errorMessage;
     private Long processingTimeMs;
