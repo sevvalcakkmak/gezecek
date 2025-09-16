@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Text } from '@/components/ui/text';
 import { Heading } from '@/components/ui/heading';
 import { Grid, GridItem } from '@/components/ui/grid';
+import { View } from '@/components/ui/view';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import CityPicker, { City } from '@/components/home/CityPicker';
@@ -14,6 +15,8 @@ import { Animated } from 'react-native';
 import DatePicker from '@/components/home/DatePicker';
 import { Toast, ToastDescription, ToastTitle, useToast } from '@/components/ui/toast';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import SearchModal from '@/components/ui/search-modal';
+import useSearchProgress from '@/hooks/useSearchProgress';
 
 const Home = () => {
   const {
@@ -30,6 +33,10 @@ const Home = () => {
   const [toastId, setToastId] = React.useState<number>(0);
   const [swapAngle, setSwapAngle] = React.useState(90);
   const rotation = React.useRef(new Animated.Value(90)).current;
+
+  // Search modal state
+  const { steps, overallProgress, isSearching, startSearch, resetSearch } = useSearchProgress();
+  const [showProgressModal, setShowProgressModal] = React.useState(false);
 
   React.useEffect(() => {
     Animated.timing(rotation, {
@@ -65,7 +72,26 @@ const Home = () => {
       return;
     }
 
+    // Progress Modal'ı göster ve aramaya başla
+    setShowProgressModal(true);
+    resetSearch(); // Önceki durumu temizle
+    startSearch(); // Aramaya başla
   };
+
+  // Search modal'ı kapat
+  const handleCloseSearchModal = () => {
+    setShowProgressModal(false);
+    resetSearch();
+  };
+
+  // Arama tamamlandığında otomatik kapat (opsiyonel)
+  React.useEffect(() => {
+    if (!isSearching && overallProgress === 100) {
+      setTimeout(() => {
+        setShowProgressModal(false);
+      }, 1500); // 1.5 saniye bekle sonra kapat
+    }
+  }, [isSearching, overallProgress]);
 
 
   const handleToast = (title: string, description: string) => {
@@ -96,89 +122,110 @@ const Home = () => {
     });
   };
 
-  return <Grid className="gap-5" _extra={{
-    className: 'grid-cols-8'
-  }}>
-    <GridItem className="p-6" _extra={{
-      className: 'col-span-8'
-    }}>
-      <Card size={"lg"} variant={"filled"}>
-        <Heading size="2xl" className='mb-1 text-center'>
-          {t("homePage.getStarted")}
-        </Heading>
-        <Text size="sm" className='mb-1 text-center'>{t("homePage.intro")}</Text>
-      </Card>
-    </GridItem>
-
-    <GridItem className=" px-6 justify-center" _extra={{
-      className: 'col-span-8'
-    }}>
-      <Card size={"lg"} variant={"outline"}>
-        <Grid className="my-6 gap-5" _extra={{
-          className: 'grid-cols-8'
+  return (
+    <View className="flex-1 relative">
+      <Grid className="gap-5" _extra={{
+        className: 'grid-cols-8'
+      }}>
+        <GridItem className="p-6" _extra={{
+          className: 'col-span-8'
         }}>
+          <Card size={"lg"} variant={"filled"}>
+            <Heading size="2xl" className='mb-1 text-center'>
+              {t("homePage.getStarted")}
+            </Heading>
+            <Text size="sm" className='mb-1 text-center'>{t("homePage.intro")}</Text>
+          </Card>
+        </GridItem>
 
-          <GridItem className="justify-center" _extra={{
-            className: 'col-span-5'
+        <GridItem className=" px-6 justify-center" _extra={{
+          className: 'col-span-8'
+        }}>
+          <Card size={"lg"} variant={"outline"}>
+            <Grid className="my-6 gap-5" _extra={{
+              className: 'grid-cols-8'
+            }}>
+
+              <GridItem className="justify-center" _extra={{
+                className: 'col-span-5'
+              }}>
+                <CityPicker placeholder={t("homePage.origin")} mode='origin' enforceSelection value={origin} onSelect={city => setOrigin(city)} />
+              </GridItem>
+
+              <GridItem className="justify-center" _extra={{
+                className: 'col-span-3'
+              }}>
+                <DatePicker value={originDate} onDateChange={setOriginDate} />
+              </GridItem>
+
+
+              <GridItem className="justify-center" _extra={{
+                className: 'col-span-3'
+              }}>
+                <Divider />
+              </GridItem>
+
+              <GridItem className="justify-center" _extra={{
+                className: 'col-span-2'
+              }}>
+                <Button size='lg' action='primary' variant='solid' onPress={swap} className='rounded-full h-12 w-12 p-0 self-center' accessibilityLabel={t('homePage.swap')}>
+                  <AnimatedButtonIcon as={RepeatIcon} style={{
+                    transform: [{
+                      rotate: rotateInterpolate
+                    }]
+                  }} />
+                </Button>
+              </GridItem>
+
+              <GridItem className="justify-center" _extra={{
+                className: 'col-span-3'
+              }}>
+                <Divider />
+              </GridItem>
+
+              <GridItem className="justify-center" _extra={{
+                className: 'col-span-5'
+              }}>
+                <CityPicker placeholder={t("homePage.destination")} mode='destination' enforceSelection value={destination} onSelect={city => setDestination(city)} />
+              </GridItem>
+
+              <GridItem className="justify-center" _extra={{
+                className: 'col-span-3'
+              }}>
+                <DatePicker value={destinationDate} onDateChange={setDestinationDate} />
+              </GridItem>
+
+            </Grid>
+          </Card>
+        </GridItem>
+
+        <GridItem className="justify-center items-center px-6 py-4" _extra={{
+          className: 'col-span-8'
+        }}>
+          <Button className='w-2/3 max-w-xs justify-center items-center mb-2' action={"primary"} variant={"solid"} size={"xl"} onPress={handleSearch}>
+            <ButtonText>{t("homePage.search")}</ButtonText>
+          </Button>
+
+          {/* Test Button - Development purposes only */}
+          <Button className='w-2/3 max-w-xs justify-center items-center' action={"secondary"} variant={"outline"} size={"md"} onPress={() => {
+            setShowProgressModal(true);
+            resetSearch();
+            startSearch();
           }}>
-            <CityPicker placeholder={t("homePage.origin")} mode='origin' enforceSelection value={origin} onSelect={city => setOrigin(city)} />
-          </GridItem>
+            <ButtonText>Test Search Modal</ButtonText>
+          </Button>
+        </GridItem>
 
-          <GridItem className="justify-center" _extra={{
-            className: 'col-span-3'
-          }}>
-            <DatePicker value={originDate} onDateChange={setOriginDate} />
-          </GridItem>
+      </Grid>
 
-
-          <GridItem className="justify-center" _extra={{
-            className: 'col-span-3'
-          }}>
-            <Divider />
-          </GridItem>
-
-          <GridItem className="justify-center" _extra={{
-            className: 'col-span-2'
-          }}>
-            <Button size='lg' action='primary' variant='solid' onPress={swap} className='rounded-full h-12 w-12 p-0 self-center' accessibilityLabel={t('homePage.swap')}>
-              <AnimatedButtonIcon as={RepeatIcon} style={{
-                transform: [{
-                  rotate: rotateInterpolate
-                }]
-              }} />
-            </Button>
-          </GridItem>
-
-          <GridItem className="justify-center" _extra={{
-            className: 'col-span-3'
-          }}>
-            <Divider />
-          </GridItem>
-
-          <GridItem className="justify-center" _extra={{
-            className: 'col-span-5'
-          }}>
-            <CityPicker placeholder={t("homePage.destination")} mode='destination' enforceSelection value={destination} onSelect={city => setDestination(city)} />
-          </GridItem>
-
-          <GridItem className="justify-center" _extra={{
-            className: 'col-span-3'
-          }}>
-            <DatePicker value={destinationDate} onDateChange={setDestinationDate} />
-          </GridItem>
-
-        </Grid>
-      </Card>
-    </GridItem>
-
-    <GridItem className="justify-center items-center px-6 py-4" _extra={{
-      className: 'col-span-8'
-    }}>
-      <Button className='w-2/3 max-w-xs justify-center items-center' action={"primary"} variant={"solid"} size={"xl"} onPress={handleSearch}>
-        <ButtonText>{t("homePage.search")}</ButtonText>
-      </Button>
-    </GridItem>
-
-  </Grid>;
+      {/* Search Progress Modal */}
+      <SearchModal
+        isVisible={showProgressModal}
+        onClose={handleCloseSearchModal}
+        steps={steps}
+        overallProgress={overallProgress}
+      />
+    </View>
+  );
 };
 export default Home;

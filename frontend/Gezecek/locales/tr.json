@@ -58,5 +58,19 @@
   "themes": {
     "light": "Açık",
     "dark": "Koyu"
+  },
+  "searchModal": {
+    "title": "Seyahatiniz Aranıyor",
+    "subtitle": "Sizin için en iyi seçenekleri bulurken lütfen bekleyin",
+    "progress": "Genel İlerleme",
+    "searching": "...",
+    "found": "Bulundu",
+    "failed": "Başarısız",
+    "footerInfo": "Bu işlem birkaç dakika sürebilir",
+    "steps": {
+      "flights": "Uçuşlar aranıyor",
+      "hotels": "Oteller bulunuyor",
+      "itinerary": "Gezi rotanız oluşturuluyor"
+    }
   }
 }
