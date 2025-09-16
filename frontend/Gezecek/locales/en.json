@@ -58,5 +58,19 @@
   "themes": {
     "light": "Light",
     "dark": "Dark"
+  },
+  "searchModal": {
+    "title": "Searching for Your Trip",
+    "subtitle": "Please wait while we find the best options for you",
+    "progress": "Overall Progress",
+    "searching": "...",
+    "found": "Found",
+    "failed": "Failed",
+    "footerInfo": "This may take a few moments",
+    "steps": {
+      "flights": "Searching for flights",
+      "hotels": "Finding hotels",
+      "itinerary": "Creating your itinerary"
+    }
   }
 }
