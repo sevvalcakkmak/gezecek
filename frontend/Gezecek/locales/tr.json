@@ -17,7 +17,14 @@
     "destination": "Varış Yeri",
     "swap": "Kalkış ve varış yerini değiştir",
     "startDate": "Başlangıç Tarihi",
-    "endDate": "Bitiş Tarihi"
+    "endDate": "Bitiş Tarihi",
+    "search": "Ara",
+    "incompleteSelectionTitle": "Eksik Seçim",
+    "incompleteSelectionDescription": "Lütfen hem kalkış hem de varış şehirlerini ve bunların tarihlerini seçin.",
+    "sameCityTitle": "Aynı Şehir Seçildi",
+    "sameCityDescription": "Kalkış ve varış şehirleri aynı olamaz. Lütfen farklı şehirler seçin.",
+    "invalidDateTitle": "Geçersiz Tarih",
+    "invalidDateDescription": "Kalkış tarihi, varış tarihinden sonra olamaz. Lütfen geçerli tarihler seçin."
   },
   "cityPicker": {
     "searchPlaceholder": "Şehir ara...",

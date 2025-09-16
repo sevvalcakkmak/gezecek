@@ -17,7 +17,14 @@
     "destination": "Destination",
     "swap": "Swap origin and destination",
     "startDate": "Start Date",
-    "endDate": "End Date"
+    "endDate": "End Date",
+    "search": "Search",
+    "incompleteSelectionTitle": "Incomplete Selection",
+    "incompleteSelectionDescription": "Please select both origin and destination cities, as well as their respective dates.",
+    "sameCityTitle": "Same City Selected",
+    "sameCityDescription": "Origin and destination cities cannot be the same. Please choose different cities.",
+    "invalidDateTitle": "Invalid Date",
+    "invalidDateDescription": "The origin date cannot be later than the destination date. Please select valid dates."
   },
   "cityPicker": {
     "searchPlaceholder": "Search city...",
