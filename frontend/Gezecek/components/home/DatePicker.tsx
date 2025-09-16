@@ -15,8 +15,12 @@ import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/dat
 import { Toast, ToastDescription, ToastTitle, useToast } from '../ui/toast';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+interface DatePickerProps {
+    value?: Date | null;
+    onDateChange?: (date: Date | null) => void;
+}
 
-const DatePicker = () => {
+const DatePicker: React.FC<DatePickerProps> = ({ value, onDateChange: onDateSelected }) => {
     const { t, i18n } = useTranslation();
     const toast = useToast();
     const insets = useSafeAreaInsets();
@@ -26,6 +30,17 @@ const DatePicker = () => {
     const [isDatePickerOpen, setIsDatePickerOpen] = React.useState<boolean>(false);
     const [date, setDate] = React.useState<Date | null>(null);
     const [dateStrings, setDateStrings] = React.useState<{ dayString: string, monthString: string, yearString: string } | null>(null);
+
+    // value prop'u değiştiğinde güncelle
+    React.useEffect(() => {
+        if (value) {
+            setDate(value);
+            const dayString = value.toLocaleDateString(dateFormat, { day: 'numeric' });
+            const monthString = value.toLocaleDateString(dateFormat, { month: 'short' });
+            const yearString = value.toLocaleDateString(dateFormat, { year: '2-digit' });
+            setDateStrings({ dayString, monthString, yearString });
+        }
+    }, [value, dateFormat]);
 
     const handleDatePress = () => {
         setIsDatePickerOpen(true);
@@ -47,6 +62,11 @@ const DatePicker = () => {
         const yearString = selectedDate.toLocaleDateString(dateFormat, { year: '2-digit' });
         setDateStrings({ dayString, monthString, yearString });
         setDate(selectedDate);
+
+        // Parent'a bildir
+        if (onDateSelected) {
+            onDateSelected(selectedDate);
+        }
     };
 
     const handleToast = (title: string, description: string) => {
