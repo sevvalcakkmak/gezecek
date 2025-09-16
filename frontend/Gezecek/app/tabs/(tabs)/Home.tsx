@@ -14,6 +14,7 @@ import { Animated } from 'react-native';
 import DatePicker from '@/components/home/DatePicker';
 import { Toast, ToastDescription, ToastTitle, useToast } from '@/components/ui/toast';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 const Home = () => {
   const {
     t
@@ -29,6 +30,7 @@ const Home = () => {
   const [toastId, setToastId] = React.useState<number>(0);
   const [swapAngle, setSwapAngle] = React.useState(90);
   const rotation = React.useRef(new Animated.Value(90)).current;
+
   React.useEffect(() => {
     Animated.timing(rotation, {
       toValue: swapAngle,
