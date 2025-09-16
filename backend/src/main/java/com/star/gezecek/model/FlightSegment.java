@@ -1,5 +1,6 @@
 package com.star.gezecek.model;
 
+import com.star.gezecek.model.enums.SegmentType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,6 +9,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Data
 @Builder
@@ -17,17 +19,13 @@ import java.time.LocalDateTime;
 public class FlightSegment {
     @Id
     private String id;
-    private String flightOptionId; // Reference to FlightOption
     private String flightNumber;
-    private String aircraft;
     private String carrierCode;
+    private String operatingCarrierCode;
     private String originAirportCode;
     private String destinationAirportCode;
-    private LocalDateTime departureTime;
-    private LocalDateTime arrivalTime;
+    private String departureTime;
+    private String arrivalTime;
     private Integer durationMinutes;
     private String cabinClass;
-    private String bookingClass;
-    private Boolean operatedBy; // If codeshare
-    private String operatingCarrierCode;
 }

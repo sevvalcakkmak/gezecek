@@ -33,8 +33,6 @@ public class FlightSearchService {
     private final FlightApiClient flightApiClient;
     private final FlightDataMapper flightDataMapper;
     private final FlightSearchResultRepository searchResultRepository;
-    private final FlightOptionRepository flightOptionRepository;
-    private final FlightSegmentRepository flightSegmentRepository;
 
     public FlightSearchService(FlightApiClient flightApiClient,
                                FlightDataMapper flightDataMapper,
@@ -44,8 +42,6 @@ public class FlightSearchService {
         this.flightApiClient = flightApiClient;
         this.flightDataMapper = flightDataMapper;
         this.searchResultRepository = searchResultRepository;
-        this.flightOptionRepository = flightOptionRepository;
-        this.flightSegmentRepository = flightSegmentRepository;
     }
 
     public FlightSearchResult searchFlights(FlightSearchRequest userRequest) {
@@ -68,18 +64,13 @@ public class FlightSearchService {
             // Calculate
             long processingTime = System.currentTimeMillis() - start;
             result.setProcessingTimeMs(processingTime);
+            result.setTripType(userRequest.getTripType());
 
             log.info("Flight search completed successfully. Search ID: {}", searchId);
             return result;
 
-        } catch (HttpClientErrorException | HttpServerErrorException ex) {
-            log.error("Flight API error. Status: {}, Body: {}",
-                    ex.getStatusCode(),
-                    ex.getResponseBodyAsString(), ex);
-            throw ex;
-        }
-        catch (RestClientException ex) {
-            log.error("RestClientException: {}", ex.getMessage(), ex);
+        } catch (Exception ex) {
+            log.error("Flight search failed. Search ID: {}", searchId, ex);
             throw ex;
         }
     }
@@ -92,12 +83,6 @@ public class FlightSearchService {
         apiRequest.setInboundDepartureDateStart(userRequest.getInboundDepartureDateStart());
         apiRequest.setOutboundDepartmentDateStart(userRequest.getOutboundDepartmentDateStart());
 
-        // Trip type → locale mapping
-        if (userRequest.getTripType() == TripType.ROUND_TRIP) {
-            apiRequest.setLocale("roundtrip");
-        } else {
-            apiRequest.setLocale(null);
-        }
 
         // Optional / default mapping
         apiRequest.setLocale(userRequest.getLocale() != null ? userRequest.getCurrency() : "eur");
@@ -127,17 +112,14 @@ public class FlightSearchService {
     }
 
 
-    // Other methods for retrieving data
     public FlightSearchResult getSearchResult(String searchId) {
-        return (FlightSearchResult) searchResultRepository.findById(searchId)
+        FlightSearchResult result = searchResultRepository.findById(searchId)
                 .orElseThrow(() -> new SearchResultNotFoundException("Search result not found: " + searchId));
-    }
 
-    public List<FlightOption> getFlightOptions(String searchId) {
-        return flightOptionRepository.findBySearchId(searchId);
-    }
+        if (result.getTripType() == null && result.getSearchParams() != null) {
+            result.setTripType(TripType.valueOf(result.getSearchParams().getTripType()));
+        }
 
-    public List<FlightSegment> getFlightSegments(String flightOptionId) {
-        return flightSegmentRepository.findByFlightOptionId(flightOptionId);
+        return result;
     }
 }

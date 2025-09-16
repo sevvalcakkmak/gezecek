@@ -2,12 +2,15 @@ package com.star.gezecek.model;
 
 import com.star.gezecek.dto.response.FlightPrice;
 import com.star.gezecek.model.enums.CabinClass;
+import com.star.gezecek.model.enums.TripType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
+
+import java.util.List;
 
 @Data
 @Builder
@@ -17,16 +20,32 @@ import org.springframework.data.redis.core.RedisHash;
 public class FlightOption {
     @Id
     private String id;
+    private TripType tripType;
+
+    private Boolean isRoundTrip;
     private FlightPrice price;
     private String bookingUrl;
     private String providerName;
-    private CarrierInfo carrier;
-    private CarrierInfo operatingCarrier;
-    private Airport departure;
-    private Airport arrival;
-    private Integer duration; // in seconds
     private BaggageInfo baggageInfo;
-    private CabinClass cabinClass;
-    private String searchId; // Reference to the original search
+    private StopoverInfo stopoverInfo;
+
+    // Outbound
+    private Airport departure; // Outbound departure
+    private Airport arrival; // Outbound arrival
+    private Integer duration; // Outbound duration
+    private CabinClass cabinClass; // Outbound cabin class
+    private CarrierInfo carrier; // Outbound carrier
+    private CarrierInfo operatingCarrier; // Outbound operating carrier
+
+    // Round-trip
+    private Airport returnDeparture;
+    private Airport returnArrival;
+    private Integer returnDuration;
+    private CabinClass returnCabinClass;
+    private CarrierInfo returnCarrier;
+    private CarrierInfo returnOperatingCarrier;
+
+    // Segment list
+    private List<FlightSegment> segments;
 }
 

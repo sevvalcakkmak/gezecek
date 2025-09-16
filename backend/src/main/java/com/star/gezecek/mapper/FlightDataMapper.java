@@ -5,6 +5,8 @@ import com.star.gezecek.dto.response.*;
 import com.star.gezecek.dto.response.Carrier;
 import com.star.gezecek.model.*;
 import com.star.gezecek.model.enums.CabinClass;
+import com.star.gezecek.model.enums.SegmentType;
+import com.star.gezecek.model.enums.TripType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
@@ -23,6 +25,7 @@ public class FlightDataMapper {
         result.setTimestamp(LocalDateTime.now());
         result.setTotalResults(apiResponse.getItineraries().size());
         result.setStatus("COMPLETED");
+        result.setTripType(userRequest.getTripType()); // Bu satırı ekleyin
 
         // Map search parameters
         result.setSearchParams(mapToSearchParams(userRequest, searchId));
@@ -67,102 +70,134 @@ public class FlightDataMapper {
     }
 
     public FlightOption mapToFlightOption(Itinerary itinerary, String searchId, String currency) {
-        return FlightOption.builder()
+        FlightOption.FlightOptionBuilder builder = FlightOption.builder()
                 .id(UUID.randomUUID().toString())
+                .tripType(itinerary.isRoundTrip() ? TripType.ROUND_TRIP : TripType.ONE_WAY)
+                .isRoundTrip(itinerary.isRoundTrip())
                 .price(extractPrice(itinerary, currency))
                 .bookingUrl(extractBookingUrl(itinerary))
                 .providerName(extractProviderName(itinerary))
-                .carrier(extractMarketingCarrier(itinerary))
-                .operatingCarrier(extractOperatingCarrier(itinerary))
-                .departure(extractDepartureInfo(itinerary))
-                .arrival(extractArrivalInfo(itinerary))
-                .duration(extractDuration(itinerary))
                 .baggageInfo(extractBaggageInfo(itinerary))
-                .cabinClass(extractCabinClass(itinerary))
-                .searchId(searchId)
+                .stopoverInfo(itinerary.isRoundTrip() ? extractStopoverInfo(itinerary) : null);
+
+        List<FlightSegment> segments = new ArrayList<>();
+
+        if (itinerary.isOneWay()) {
+            Sector sector = itinerary.getSector();
+            mapOutboundSectorToFlightOption(builder, sector);
+            segments.addAll(createFlightSegments(sector, SegmentType.OUTBOUND));
+
+        } else if (itinerary.isRoundTrip()) {
+            mapOutboundSectorToFlightOption(builder, itinerary.getOutbound());
+            mapInboundSectorToFlightOption(builder, itinerary.getInbound());
+
+            segments.addAll(createFlightSegments(itinerary.getOutbound(), SegmentType.OUTBOUND));
+            segments.addAll(createFlightSegments(itinerary.getInbound(), SegmentType.INBOUND));
+        }
+
+        builder.segments(segments);
+        return builder.build();
+    }
+
+    private List<FlightSegment> createFlightSegments(Sector sector, SegmentType type) {
+        if (sector == null || sector.getSectorSegments() == null ||
+                sector.getSectorSegments().isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<FlightSegment> flightSegments = new ArrayList<>();
+
+        for (SectorSegment sectorSegment : sector.getSectorSegments()) {
+            Segment segment = sectorSegment.getSegment();
+            TimeInfo source = segment.getSource();
+            TimeInfo destination = segment.getDestination();
+
+            FlightSegment flightSegment = FlightSegment.builder()
+                    .id(UUID.randomUUID().toString())
+                    .flightNumber(segment.getCode())
+                    .carrierCode(segment.getCarrier().getCode())
+                    .operatingCarrierCode(segment.getOperatingCarrier().getCode())
+                    .originAirportCode(source.getStation().getCode())
+                    .destinationAirportCode(destination.getStation().getCode())
+                    .departureTime(segment.getSource().getLocalTime())
+                    .arrivalTime(segment.getDestination().getLocalTime())
+                    .durationMinutes(sector.getDuration() != null ? sector.getDuration() / 60 : null)
+                    .cabinClass(String.valueOf(segment.getCabinClass()))
+                    .build();
+
+            flightSegments.add(flightSegment);
+        }
+
+        return flightSegments;
+    }
+
+    private void mapOutboundSectorToFlightOption(FlightOption.FlightOptionBuilder builder, Sector sector) {
+        if (sector == null || sector.getSectorSegments() == null ||
+                sector.getSectorSegments().isEmpty()) {
+            return;
+        }
+
+        SectorSegment firstSectorSegment = sector.getSectorSegments().get(0);
+        Segment firstSegment = firstSectorSegment.getSegment();
+
+        SectorSegment lastSectorSegment = sector.getSectorSegments().get(sector.getSectorSegments().size() -1);
+        Segment lastSegment = lastSectorSegment.getSegment();
+
+        // Outbound bilgilerini set et
+        builder.carrier(extractCarrierInfo(firstSegment.getCarrier()))
+                .operatingCarrier(extractCarrierInfo(firstSegment.getOperatingCarrier()))
+                .departure(extractAirportInfo(firstSegment.getSource()))
+                .arrival(extractAirportInfo(lastSegment.getDestination()))
+                .duration(sector.getDuration() / 60)
+                .cabinClass(firstSegment.getCabinClass());
+    }
+
+    private void mapInboundSectorToFlightOption(FlightOption.FlightOptionBuilder builder, Sector sector) {
+        if (sector == null || sector.getSectorSegments() == null ||
+                sector.getSectorSegments().isEmpty()) {
+            return;
+        }
+
+        SectorSegment firstSectorSegment = sector.getSectorSegments().get(0);
+        Segment firstSegment = firstSectorSegment.getSegment();
+
+        SectorSegment lastSectorSegment = sector.getSectorSegments().get(sector.getSectorSegments().size() -1);
+        Segment lastSegment = lastSectorSegment.getSegment();
+
+        // Inbound (return) bilgilerini set et
+        builder.returnCarrier(extractCarrierInfo(firstSegment.getCarrier()))
+                .returnOperatingCarrier(extractCarrierInfo(firstSegment.getOperatingCarrier()))
+                .returnDeparture(extractAirportInfo(firstSegment.getSource()))
+                .returnArrival(extractAirportInfo(lastSegment.getDestination()))
+                .returnDuration(sector.getDuration() / 60)
+                .returnCabinClass(firstSegment.getCabinClass());
+    }
+
+
+    private Airport extractAirportInfo(TimeInfo timeInfo) {
+        if (timeInfo == null || timeInfo.getStation() == null) return null;
+
+        Station station = timeInfo.getStation();
+        return Airport.builder()
+                .code(station.getCode())
+                .name(station.getName())
+                .cityName(station.getCity() != null ? station.getCity().getName() : null)
+                .countryCode(station.getCountry() != null ? station.getCountry().getCode() : null)
+                .coordinates(extractCoordinates(station.getGps()))
+                .localTime(timeInfo.getLocalTime())
+                .utcTime(timeInfo.getUtcTime())
                 .build();
     }
 
-    private CarrierInfo extractMarketingCarrier(Itinerary itinerary) {
-        if (itinerary.getSector() == null ||
-                itinerary.getSector().getSectorSegments() == null ||
-                itinerary.getSector().getSectorSegments().isEmpty()) {
-            return null;
-        }
-
-        SectorSegment segment = itinerary.getSector().getSectorSegments().get(0);
-        Carrier carrier = segment.getSegment().getCarrier();
-
-        if (carrier == null) {
-            return null;
-        }
+    private CarrierInfo extractCarrierInfo(Carrier carrier) {
+        if (carrier == null) return null;
 
         return CarrierInfo.builder()
                 .code(carrier.getCode())
                 .name(carrier.getName())
-                .logo("https://r-xx.bstatic.com/data/airlines_logo/" + carrier.getCode() +".png")
+                .logo("https://r-xx.bstatic.com/data/airlines_logo/" + carrier.getCode() + ".png")
                 .build();
     }
-    private CarrierInfo extractOperatingCarrier(Itinerary itinerary) {
-        if (itinerary.getSector() == null ||
-                itinerary.getSector().getSectorSegments() == null ||
-                itinerary.getSector().getSectorSegments().isEmpty()) {
-            return null;
-        }
-
-        SectorSegment segment = itinerary.getSector().getSectorSegments().get(0);
-        Carrier operatingCarrier = segment.getSegment().getOperatingCarrier();
-
-
-        return CarrierInfo.builder()
-                .code(operatingCarrier.getCode())
-                .name(operatingCarrier.getName())
-                .logo("https://r-xx.bstatic.com/data/airlines_logo/" + operatingCarrier.getCode() +".png")
-                .build();
-    }
-
-    private Airport extractDepartureInfo(Itinerary itinerary) {
-        if (itinerary.getSector() == null ||
-                itinerary.getSector().getSectorSegments() == null ||
-                itinerary.getSector().getSectorSegments().isEmpty()) {
-            return null;
-        }
-
-        SectorSegment segment = itinerary.getSector().getSectorSegments().get(0);
-        TimeInfo source = segment.getSegment().getSource();
-
-        return Airport.builder()
-                .code(source.getStation().getCode())
-                .name(source.getStation().getName())
-                .cityName(source.getStation().getCity().getName())
-                .countryCode(source.getStation().getCountry().getCode())
-                .coordinates(extractCoordinates(source.getStation().getGps()))
-                .localTime(source.getLocalTime())
-                .utcTime(source.getUtcTime())
-                .build();
-    }
-
-    private Airport extractArrivalInfo(Itinerary itinerary) {
-        if (itinerary.getSector() == null ||
-                itinerary.getSector().getSectorSegments() == null ||
-                itinerary.getSector().getSectorSegments().isEmpty()) {
-            return null;
-        }
-
-        SectorSegment segment = itinerary.getSector().getSectorSegments().get(0);
-        TimeInfo destination = segment.getSegment().getDestination();
-
-        return Airport.builder()
-                .code(destination.getStation().getCode())
-                .name(destination.getStation().getName())
-                .cityName(destination.getStation().getCity().getName())
-                .countryCode(destination.getStation().getCountry().getCode())
-                .coordinates(extractCoordinates(destination.getStation().getGps()))
-                .localTime(destination.getLocalTime())
-                .utcTime(destination.getUtcTime())
-                .build();
-    }
-
 
 
     private BaggageInfo extractBaggageInfo(Itinerary itinerary) {
@@ -225,30 +260,31 @@ public class FlightDataMapper {
                 .build();
     }
 
-    // Mevcut helper metodları (bazıları artık kullanılmayacak)
     private FlightPrice extractPrice(Itinerary itinerary, String currency) {
         if (itinerary.getPrice() == null) {
             return null;
         }
-        // API'den gelen price objesini al, currency'yi request'ten set et
         FlightPrice price = new FlightPrice();
         price.setAmount(itinerary.getPrice().getAmount());
-        price.setCurrency(currency); // Request'ten gelen currency
+        price.setCurrency(currency);
 
         return price;
     }
-    private CabinClass extractCabinClass(Itinerary itinerary){
-        if (itinerary.getSector() == null ||
-                itinerary.getSector().getSectorSegments() == null ||
-                itinerary.getSector().getSectorSegments().isEmpty()) {
+
+
+    private StopoverInfo extractStopoverInfo(Itinerary itinerary) {
+        if (!itinerary.isRoundTrip() || itinerary.getStopover() == null) {
             return null;
         }
 
-
-        SectorSegment segment = itinerary.getSector().getSectorSegments().get(0);
-        return segment.getSegment().getCabinClass();
+        Stopover stopover = itinerary.getStopover();
+        return StopoverInfo.builder()
+                .nightsCount(stopover.getNightsCount())
+                .cityName(stopover.getArrival() != null && stopover.getArrival().getCity() != null ?
+                        stopover.getArrival().getCity().getName() : null)
+                .duration(stopover.getDuration())
+                .build();
     }
-
 
     private String extractBookingUrl(Itinerary itinerary) {
         if (!hasValidBookingOptions(itinerary)) {
@@ -289,18 +325,6 @@ public class FlightDataMapper {
         return itinerary.getProvider() != null ? itinerary.getProvider().getName() : null;
     }
 
-    private String extractCarrierName(Itinerary itinerary) {
-        if (itinerary.getSector() != null &&
-                !itinerary.getSector().getSectorSegments().isEmpty()) {
-            SectorSegment segment = itinerary.getSector().getSectorSegments().get(0);
-            return segment.getSegment().getCarrier().getName();
-        }
-        return null;
-    }
-
-    private Integer extractDuration(Itinerary itinerary) {
-        return itinerary.getSector() != null ? itinerary.getSector().getDuration() : null;
-    }
 
     private Map<String, Double> extractCoordinates(Gps gps) {
         if (gps == null) {
@@ -311,10 +335,5 @@ public class FlightDataMapper {
         coordinates.put("lat", gps.getLat());
         coordinates.put("lng", gps.getLng());
         return coordinates;
-    }
-    public FlightSegment mapToFlightSegment(String flightOptionId) {
-        FlightSegment segment = new FlightSegment();
-        segment.setId(UUID.randomUUID().toString());
-        return segment;
     }
 }
