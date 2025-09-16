@@ -13,6 +13,8 @@ import { Slot } from 'expo-router';
 import { I18nextProvider } from 'react-i18next';
 import i18n, { i18nReady } from '@/i18n';
 import { ThemeProvider as CustomThemeProvider, useTheme } from '@/contexts/ThemeContext';
+import { ApiProvider } from '@/services';
+import { GlobalApiErrorHandler } from '@/components/GlobalApiErrorHandler';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -65,10 +67,14 @@ function ThemedApp() {
   }
 
   return (
-    <GluestackUIProvider mode={resolvedTheme}>
-      <ThemeProvider value={resolvedTheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Slot />
-      </ThemeProvider>
-    </GluestackUIProvider>
+    <ApiProvider>
+      <GluestackUIProvider mode={resolvedTheme}>
+        <ThemeProvider value={resolvedTheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <GlobalApiErrorHandler>
+            <Slot />
+          </GlobalApiErrorHandler>
+        </ThemeProvider>
+      </GluestackUIProvider>
+    </ApiProvider>
   );
 }
