@@ -99,6 +99,8 @@ public class FlightDataMapper {
         return builder.build();
     }
 
+
+
     private List<FlightSegment> createFlightSegments(Sector sector, SegmentType type) {
         if (sector == null || sector.getSectorSegments() == null ||
                 sector.getSectorSegments().isEmpty()) {
@@ -112,11 +114,20 @@ public class FlightDataMapper {
             TimeInfo source = segment.getSource();
             TimeInfo destination = segment.getDestination();
 
+            // Operating carrier null kontrolü
+            String operatingCarrierCode = null;
+            if (segment.getOperatingCarrier() != null) {
+                operatingCarrierCode = segment.getOperatingCarrier().getCode();
+            } else {
+                // Eğer operating carrier null ise, normal carrier'ı kullan
+                operatingCarrierCode = segment.getCarrier().getCode();
+            }
+
             FlightSegment flightSegment = FlightSegment.builder()
                     .id(UUID.randomUUID().toString())
                     .flightNumber(segment.getCode())
                     .carrierCode(segment.getCarrier().getCode())
-                    .operatingCarrierCode(segment.getOperatingCarrier().getCode())
+                    .operatingCarrierCode(operatingCarrierCode)
                     .originAirportCode(source.getStation().getCode())
                     .destinationAirportCode(destination.getStation().getCode())
                     .departureTime(segment.getSource().getLocalTime())
@@ -145,6 +156,7 @@ public class FlightDataMapper {
 
         // Outbound bilgilerini set et
         builder.carrier(extractCarrierInfo(firstSegment.getCarrier()))
+                .stopCount(calculateStopCount(sector))
                 .operatingCarrier(extractCarrierInfo(firstSegment.getOperatingCarrier()))
                 .departure(extractAirportInfo(firstSegment.getSource()))
                 .arrival(extractAirportInfo(lastSegment.getDestination()))
@@ -166,6 +178,7 @@ public class FlightDataMapper {
 
         // Inbound (return) bilgilerini set et
         builder.returnCarrier(extractCarrierInfo(firstSegment.getCarrier()))
+                .returnStopCount(calculateStopCount(sector))
                 .returnOperatingCarrier(extractCarrierInfo(firstSegment.getOperatingCarrier()))
                 .returnDeparture(extractAirportInfo(firstSegment.getSource()))
                 .returnArrival(extractAirportInfo(lastSegment.getDestination()))
@@ -173,6 +186,9 @@ public class FlightDataMapper {
                 .returnCabinClass(firstSegment.getCabinClass());
     }
 
+    private Integer calculateStopCount(Sector sector) {
+        return sector.getSectorSegments().size() - 1;
+    }
 
     private Airport extractAirportInfo(TimeInfo timeInfo) {
         if (timeInfo == null || timeInfo.getStation() == null) return null;
