@@ -30,6 +30,7 @@ public class FlightOption {
     private StopoverInfo stopoverInfo;
 
     // Outbound
+    private Integer stopCount;
     private Airport departure; // Outbound departure
     private Airport arrival; // Outbound arrival
     private Integer duration; // Outbound duration
@@ -38,6 +39,7 @@ public class FlightOption {
     private CarrierInfo operatingCarrier; // Outbound operating carrier
 
     // Round-trip
+    private Integer returnStopCount;
     private Airport returnDeparture;
     private Airport returnArrival;
     private Integer returnDuration;
